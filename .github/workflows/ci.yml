@@ -1,0 +1,18 @@
+name: demo
+on: [push, pull_request]
+jobs:
+  demo:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python: ["3.9", "3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: selftest (pure logic, no transport)
+        run: python bus.py selftest
+      - name: demo (seven scenarios, self-checking)
+        run: python demo.py
