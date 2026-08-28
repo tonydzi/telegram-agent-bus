@@ -140,7 +140,7 @@ Distilled from a fleet of machines running Claude Code that coordinate through a
 Telegram group day to day: a human owner, an AI cofounder, and several computers
 that are not always awake at the same time. The protocol layer above this one,
 consensus and governance, lives in
-[claude-consensus](https://github.com/tonydzi/claude-consensus). The private
+[claude-consensus](https://github.com/tonydzi/claw-consensus). The private
 content stays private; the pattern is here, MIT.
 
 Built by Anton Dziatkovskii with his AI cofounder. Commits carry an
