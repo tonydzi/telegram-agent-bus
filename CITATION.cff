@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: "If you use telegram-agent-bus in research or software, please cite it as below."
+title: "telegram-agent-bus"
+type: software
+authors:
+  - family-names: Dziatkovskii
+    given-names: Anton
+    orcid: "https://orcid.org/0000-0001-7408-3054"
+    affiliation: "Palo Alto AI Research Lab"
+repository-code: "https://github.com/tonydzi/telegram-agent-bus"
+url: "https://github.com/tonydzi/telegram-agent-bus"
+abstract: >-
+  Two agents on two machines exchange tasks, ACKs and results through a Telegram group, with no public IP, port or server.
