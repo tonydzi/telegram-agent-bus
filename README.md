@@ -82,14 +82,13 @@ so everything else runs on a bare Python 3.9+ (CI: 3.9, 3.11, 3.13 on Linux and 
 
 1. **Single writer per file.** Every machine appends to its own ledger shard,
    `ledger/<MACHINE>.jsonl`. Two machines never write one file, so a synced
-   folder cannot produce a conflict. This one invariant deletes a whole class
-   of bugs.
-2. **Delivered is not done.** An ACK proves someone heard you. Only a RESULT
+   folder cannot produce a conflict. This one invariant deletes a whole class of bugs, and it is enforced in [bus.py](bus.py).
+2. **Delivered is not done.** An ACK in [bus.py](bus.py) proves someone heard you. Only a RESULT
    closes a task. `bus.py status` lists what you asked for and never got back,
    and exits non-zero when something is past its SLA, so a cron job can watch it.
-3. **Silence gets chased, not assumed.** A task past the SLA gets one automatic
+3. **Silence gets chased, not assumed.** A task past the SLA set in [bus.py](bus.py) gets one automatic
    nudge. Once. A bus that retries forever is a bus everybody mutes.
-4. **The wire carries data, never authority.** Inbound text never selects code.
+4. **The wire carries data, never authority.** Inbound text never selects code, which is the one rule [bus.py](bus.py) will not bend.
    `peer.py` dispatches on `CAPABILITIES`, a table this machine's owner wrote;
    an unknown request comes back as a refusal, not as a shell. A group chat is
    a place where anyone can type. Treat it like one.
@@ -120,13 +119,11 @@ Full setup notes, the failure modes, and what each variable means:
 
 - **The Telegram transport is not covered by `demo.py`'s live path.** Scenario G
   drives it against a stubbed client, which tests our cursor, addressing and
-  self-echo logic but not telethon and not Telegram. The machine this was written
-  on has no Telegram session, so the live rail is verified by the setup above,
-  by hand, not by CI. Said plainly rather than implied.
+  self-echo logic but not telethon and not Telegram. The machine this was written on in 2026 has no Telegram session, so the live rail is verified by the setup above, by hand, not by [.github/workflows/ci.yml](.github/workflows/ci.yml). Said plainly rather than implied.
 - **No encryption beyond Telegram's own.** Group messages are readable by
   everyone in the group and by Telegram. Do not put secrets on this rail.
   Capability names and results, yes. Tokens, no.
-- **The file transport has no locking.** It relies on append-only writes and one
+- **The file transport in [bus.py](bus.py) has no locking.** It relies on append-only writes and one
   writer per file. That has held for us; it is not a distributed log.
 - **Ordering is per-sender.** There is no global clock and no attempt at one.
 - **This is an example, not a framework.** It is meant to be read in one sitting
@@ -143,7 +140,7 @@ consensus and governance, lives in
 [claude-consensus](https://github.com/tonydzi/claw-consensus). The private
 content stays private; the pattern is here, MIT.
 
-Built by Anton Dziatkovskii with his AI cofounder. Commits carry an
+Built by Anton Dziatkovskii with his AI cofounder; licensed [MIT](LICENSE), citable via [CITATION.cff](CITATION.cff), gotchas in [docs/GOTCHAS.md](docs/GOTCHAS.md). Commits carry an
 `Assisted-by:` trailer where that is true.
 
 Issues and PRs welcome, especially "your rule 4 is not enough and here is why".
@@ -154,9 +151,7 @@ Issues and PRs welcome, especially "your rule 4 is not enough and here is why".
 
 ## 🧩 One piece of a working system
 
-This repository is one piece lifted out of a live operation: one non-technical founder, an AI
-cofounder, and a fleet of machines that reach consensus with each other and wake the human only
-for money or the irreversible. It was extracted after it survived production, not written as a
+This repository is one piece lifted out of a live operation mapped in [SYSTEM.md](https://github.com/tonydzi/tonydzi/blob/main/SYSTEM.md): one non-technical founder, an AI cofounder, and a fleet of machines that reach consensus with each other and wake the human only for money or the irreversible. It was extracted after it survived production, not written as a
 demo — and it runs on its own: nothing here phones home to the rest.
 
 **See how the whole thing fits together → [SYSTEM.md](https://github.com/tonydzi/tonydzi/blob/main/SYSTEM.md)**
@@ -165,7 +160,6 @@ demo — and it runs on its own: nothing here phones home to the rest.
 
 ## AI contributors
 
-This project is built by a human + AI team, and the git log says so: Claude writes most of
-the code, Codex and Grok review it, Gemini feeds the research. Each is credited on a commit
+This project is built by a human + AI team, and the git log says so under the rules in [AI-CONTRIBUTORS.md](https://github.com/tonydzi/.github/blob/main/AI-CONTRIBUTORS.md): Claude writes most of the code, Codex and Grok review it, Gemini feeds the research. Each is credited on a commit
 **only if its output changed that commit's content** — no decorative credits. Lab-wide
 policy, one source for every repo: [AI-CONTRIBUTORS.md](https://github.com/tonydzi/.github/blob/main/AI-CONTRIBUTORS.md).
