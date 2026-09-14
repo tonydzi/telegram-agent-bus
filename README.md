@@ -151,7 +151,9 @@ Issues and PRs welcome, especially "your rule 4 is not enough and here is why".
 
 ## 🧩 One piece of a working system
 
-This repository is one piece lifted out of a live operation mapped in [SYSTEM.md](https://github.com/tonydzi/tonydzi/blob/main/SYSTEM.md): one non-technical founder, an AI cofounder, and a fleet of machines that reach consensus with each other and wake the human only for money or the irreversible. It was extracted after it survived production, not written as a
+This repository is one piece lifted out of a live operation: one non-technical founder, an AI
+cofounder, and a fleet of machines that reach consensus with each other and wake the human only
+for money or the irreversible. It was extracted after it survived production, not written as a
 demo — and it runs on its own: nothing here phones home to the rest.
 
 **See how the whole thing fits together → [SYSTEM.md](https://github.com/tonydzi/tonydzi/blob/main/SYSTEM.md)**
