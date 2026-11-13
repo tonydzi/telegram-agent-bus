@@ -1,5 +1,61 @@
 # telegram-agent-bus
 
+Lets an AI agent on one computer send a task to an agent on another computer through a Telegram group, and get the answer back. No server, open port or VPN is needed.
+
+**Who it's for:** people who run coding agents on more than one machine and want them to cooperate while a human reads along.
+**What you get:** a small Python example (`bus.py`, `peer.py`) with task, acknowledgement and result tracking, plus an offline demo that proves the logic works.
+
+## Quick start
+1. `git clone https://github.com/tonydzi/telegram-agent-bus` and `cd telegram-agent-bus`.
+2. Run `python demo.py`. It needs no Telegram account, no packages and no network.
+3. When you want the real thing, follow "Real Telegram, in about ten minutes" in Details.
+
+**Done when:** the demo ends with `22/22 checks passed`.
+
+> Want an AI agent to do it for you? Paste this to Claude Code / Codex / Cursor:
+> "Read the 'For AI agents' section of https://github.com/tonydzi/telegram-agent-bus and set it up for me."
+
+## For AI agents
+
+### Preconditions
+- Python 3.9 or newer. Standard library only for the demo and the file transport.
+- Telegram transport only: `pip install telethon`, plus a Telegram user account (not a bot: bots cannot see other bots' messages), `api_id` and `api_hash` from https://my.telegram.org, and a group both machines can read.
+- Ask the human for: the machine names, which transport (file or telegram), the Telegram api_id, api_hash and group id, and consent to log in with their Telegram user account. Automating a user account can risk that account, so get an explicit yes.
+
+### Install
+```bash
+git clone https://github.com/tonydzi/telegram-agent-bus
+cd telegram-agent-bus
+python demo.py                 # offline check, no network
+python bus.py selftest         # 10 pure-logic checks
+```
+For the Telegram transport also run `pip install telethon` (ideally inside a virtualenv).
+
+### Configure
+Copy `.env.example` to `.env`, fill it in, then load it with `set -a; . ./.env; set +a`. Variables:
+- `ABUS_MACHINE`: this machine's name, e.g. `HUB`. Each machine needs its own.
+- `ABUS_DIR`: state folder (default `~/.abus`).
+- `ABUS_TRANSPORT`: `file` or `telegram`.
+- Telegram only: `ABUS_TG_API_ID`, `ABUS_TG_API_HASH`, `ABUS_TG_CHAT` (group chat id), optional `ABUS_TG_SESSION`. The human provides these; never invent them.
+
+### Verify
+```bash
+python demo.py
+python bus.py selftest
+```
+Expected: `demo.py` prints `22/22 checks passed` and `verdict: the protocol does what the README says`, exit code 0. `selftest` prints `10/10 passed`, exit code 0. (Both run locally on this repo: exit 0.) The live Telegram path is not covered by these checks; verify it by hand: start `python peer.py --machine HUB` on one machine, then from another run `python bus.py --transport telegram send HUB "uptime"` and wait for the result.
+
+### Uninstall / rollback
+Stop any running `peer.py`. Delete the repo folder and the state folder `ABUS_DIR`. To remove the Telegram login, delete the `.session` file in `ABUS_DIR` and end that session in Telegram under Settings, Devices.
+
+### Rules for the agent
+- Never commit `.env` or the `.session` file. They hold a full Telegram login.
+- Never put secrets on the bus. Group messages are readable by everyone in the group.
+- Do not extend `CAPABILITIES` in `peer.py` or let inbound text choose what code runs. The wire carries data, not authority.
+- Do not create a Telegram group, log in, or start `peer.py` on the human's account without explicit approval.
+
+## Details
+
 **Two agents, two machines, one Telegram group. They send each other tasks, ACK them, and report back. You are in the same group, reading along.**
 
 Not a phone remote for one agent. That already exists a dozen times over. This is the other direction: machine A's agent asks machine B's agent for something, and neither machine needs a public IP, an open port, a VPN, or a server. The transport is a group chat you are already in.
