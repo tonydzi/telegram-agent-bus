@@ -42,7 +42,7 @@ import re
 import sys
 import time
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 V = 1
 KINDS = ("TASK", "ACK", "RESULT", "HEARTBEAT")
@@ -55,7 +55,7 @@ DEFAULT_SLA_MIN = 15                 # a TASK with no RESULT past this is chased
 # --------------------------------------------------------------------------
 
 def now_iso():
-    return datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    return datetime.now(timezone.utc).replace(tzinfo=None).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def new_id():
@@ -179,7 +179,7 @@ def outstanding(records, sla_min=DEFAULT_SLA_MIN, now=None):
     An ACK moves nothing off this list - only a RESULT does. That asymmetry is
     the whole point: the sender owns the outcome, not the handoff.
     """
-    now = now or datetime.utcnow()
+    now = now or datetime.now(timezone.utc).replace(tzinfo=None)
     sent, acked, done = {}, set(), set()
     for r in records:
         env = r.get("env") or {}
@@ -451,7 +451,7 @@ def cmd_selftest(args):
     except ValueError:
         checks.append(("unknown kind rejected", True))
 
-    t0 = (datetime.utcnow() - timedelta(minutes=99)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    t0 = (datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(minutes=99)).strftime("%Y-%m-%dT%H:%M:%SZ")
     recs = [{"dir": "out", "env": envelope("A", "B", "TASK", "old", eid="t1", ts=t0)},
             {"dir": "in", "env": envelope("B", "A", "ACK", "", ref="t1")}]
     rows = outstanding(recs)

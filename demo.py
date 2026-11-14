@@ -35,7 +35,7 @@ import os
 import shutil
 import sys
 import tempfile
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import bus as busmod
 import peer as peermod
@@ -118,7 +118,7 @@ def scenario_c(root):
     root = isolate(root, 'c')
     print("\nC. silent peer - ACK is not done, and silence gets chased")
     hub = make(root, HUB)
-    old = (datetime.utcnow() - timedelta(minutes=99)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    old = (datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(minutes=99)).strftime("%Y-%m-%dT%H:%M:%SZ")
     env = busmod.envelope(HUB, LAPTOP, "TASK", "uptime", ts=old)
     hub.transport.send(env)
     hub.ledger.append("out", env)
