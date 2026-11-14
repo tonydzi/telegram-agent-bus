@@ -32,7 +32,7 @@ python bus.py selftest         # 10 pure-logic checks
 For the Telegram transport also run `pip install telethon` (ideally inside a virtualenv).
 
 ### Configure
-Copy `.env.example` to `.env`, fill it in, then load it with `set -a; . ./.env; set +a`. Variables:
+Needed only for the real Telegram transport; the demo and selftest need none of this. Copy `.env.example` to `.env`, fill it in, then load it with `set -a; . ./.env; set +a` (bash/zsh). On Windows PowerShell set each variable yourself, e.g. `$env:ABUS_MACHINE="HUB"; $env:ABUS_TRANSPORT="telegram"` (the `.env` file is not read by the Python code, and a literal `~` in `ABUS_DIR` is not expanded outside a POSIX shell, so use a full path there). Variables:
 - `ABUS_MACHINE`: this machine's name, e.g. `HUB`. Each machine needs its own.
 - `ABUS_DIR`: state folder (default `~/.abus`).
 - `ABUS_TRANSPORT`: `file` or `telegram`.
@@ -43,7 +43,7 @@ Copy `.env.example` to `.env`, fill it in, then load it with `set -a; . ./.env; 
 python demo.py
 python bus.py selftest
 ```
-Expected: `demo.py` prints `22/22 checks passed` and `verdict: the protocol does what the README says`, exit code 0. `selftest` prints `10/10 passed`, exit code 0. (Both run locally on this repo: exit 0.) The live Telegram path is not covered by these checks; verify it by hand: start `python peer.py --machine HUB` on one machine, then from another run `python bus.py --transport telegram send HUB "uptime"` and wait for the result.
+Expected: `demo.py` prints `22/22 checks passed` and `verdict: the protocol does what the README says`, exit code 0. `selftest` prints `10/10 passed`, exit code 0. Both exit non-zero if a check fails. On Python 3.12+ they also print `DeprecationWarning` lines about `utcnow()` to stderr; these are harmless. The live Telegram path is not covered by these checks. Verify it by hand, with the human present: the first `python peer.py --machine HUB` asks interactively for the Telegram phone number and login code (a step only the human can do). Then, from the other machine (with its own `ABUS_MACHINE`, e.g. `LAPTOP`), run `python bus.py --transport telegram send HUB "uptime"`, which prints `sent #<id> LAPTOP -> HUB (TASK)`. After about one peer interval (20 s by default) run `python bus.py --transport telegram inbox`, which should list a `RESULT` from HUB, then `python bus.py --transport telegram status`, which should print `nothing outstanding - every TASK sent has a RESULT back`. The peer answers only `ping`, `uptime`, `disk` and `echo`.
 
 ### Uninstall / rollback
 Stop any running `peer.py`. Delete the repo folder and the state folder `ABUS_DIR`. To remove the Telegram login, delete the `.session` file in `ABUS_DIR` and end that session in Telegram under Settings, Devices.
